@@ -9,13 +9,31 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
-    "parcel-bundler": "^1.12.3"
+    "eslint-plugin-react": "^7.13.0",
+    "parcel-bundler": "^1.12.3",
+    "prettier": "^1.17.0"
   },
   "dependencies": {
+    "prop-types": "^15.7.2",
+    "ramda": "^0.26.1",
     "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-redux": "^7.0.3",
     "redux": "^4.0.1",
     "redux-saga": "^1.0.2"
-  }
+  },
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "(^[_][_]*$)|(^.$)",
+        "varsIgnorePattern": "(^[_][_]*$)|(^R$)"
+      }
+    ]
+  },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ]
 }
