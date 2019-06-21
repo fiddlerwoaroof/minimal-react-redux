@@ -60,8 +60,8 @@ function* toplevel() {
     try {
       yield rootTask.toPromise();
     } catch (err) {
-      console.log("Error!");
-      yield put(recordError(err));
+      console.log("Error!", err);
+      yield put(recordError(err.toString()));
 
       const { type } = yield take([
         "co/fwoar/APP_RESTART",

@@ -7,14 +7,14 @@ export const Root = ({ name, updateName, ip, getIp, fail, error, restart }) => (
   <div>
     {error ? (
       <div>
-        {error}
-        <button onClick={restart}>Restart</button>
+        Received an error with message: {error} Get Ip won&apos;t work until
+        error resolved. <button onClick={restart}>Restart</button>
       </div>
     ) : null}
     <NameControl name={name} updateName={updateName} />
     <IpControl ip={ip} getIp={getIp} />
+    <p />
     <button onClick={fail}>Fail</button>
-    <button onClick={restart}>Restart</button>
   </div>
 );
 Root.propTypes = {

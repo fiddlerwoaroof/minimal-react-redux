@@ -14,9 +14,11 @@ const initialState = {
   error: null
 };
 
-export const rootReducer = (state = initialState, action) =>
+export const rootReducer = (state = initialState, action) => (
+  console.log(action),
   R.cond([
     [typeEquals(UPDATE_NAME), applyAction("name", state)],
     [typeEquals(UPDATE_IP), applyAction("ip", state)],
     [R.T, action => ({ ...state, error: errorReducer(state.error, action) })]
-  ])(action);
+  ])(action)
+);

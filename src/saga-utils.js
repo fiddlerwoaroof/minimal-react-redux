@@ -5,13 +5,14 @@ import { action } from "./redux-utils";
 export const restart = () => ({
   type: "co/fwoar/APP_RESTART"
 });
-const RECORD_ERROR = "RECORD_ERROR";
+const RECORD_ERROR = "co/fwoar/RECORD_ERROR";
 export const recordError = action(RECORD_ERROR);
 
 export const errorReducer = (state = null, { type, data }) => {
   if (type === "co/fwoar/APP_RESTART") {
     return null;
   } else if (type === "co/fwoar/RECORD_ERROR") {
+    console.log("recording an error");
     return data;
   } else {
     return state;
