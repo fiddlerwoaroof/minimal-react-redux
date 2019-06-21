@@ -1,12 +1,19 @@
+import * as R from "ramda";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider, connect } from "react-redux";
 import { createStore, applyMiddleware, compose } from "redux";
 import createSagaMiddleware from "redux-saga";
 
-import { Root } from "./react";
-import { rootReducer, updateName } from "./redux";
-import { rootSaga, getIp } from "./saga";
+import { withDispatch } from "./redux-utils";
+import { restart, recordError } from "./saga-utils";
+import { take, spawn, delay } from "redux-saga/effects";
+
+import { Root } from "./toplevel-react";
+import { rootReducer, updateName } from "./reducer";
+import { rootSaga, getIp, fail } from "./root-saga";
+
+import { put } from "redux-saga/effects";
 
 // Store Setup ==============================================================================
 
@@ -20,29 +27,56 @@ export const store = createStore(
   composeEnhancers(applyMiddleware(sagaMiddleware))
 );
 
-// Run the root saga
-sagaMiddleware.run(rootSaga);
-
-// Connect Redux to Toplevel Component ======================================================
 const ConnectedRoot = connect(
   // Map the store's state to the toplevel component's props
-  ({ name, ip }) => ({ name, ip }),
+  R.pickAll(["name", "ip", "error"]),
   // Map redux's dispatch function to props that will call it with a specific action
-  dispatch => ({
-    getIp() {
-      dispatch(getIp());
-    },
-    updateName(v) {
-      dispatch(updateName(v));
-    }
-  })
+  withDispatch({ getIp, updateName, fail, restart })
 )(Root);
 
-// Render Connected Component to the dom at #root ===========================================
-ReactDOM.render(
-  // The Toplevel component is wrapped in a provider, to make the store available to connect
-  <Provider store={store}>
-    <ConnectedRoot />
-  </Provider>,
-  document.getElementById("root")
-);
+function* toplevel() {
+  // Run the root saga
+  let rootTask = yield spawn(rootSaga);
+
+  // Connect Redux to Toplevel Component ======================================================
+  // Render Connected Component to the dom at #root ===========================================
+  yield take("co/fwoar/APP_INIT");
+
+  const reactRender = new Promise(resolve => {
+    ReactDOM.render(
+      // The Toplevel component is wrapped in a provider, to make the store available to connect
+      <Provider store={store}>
+        <ConnectedRoot />
+      </Provider>,
+      document.getElementById("root"),
+      resolve
+    );
+  });
+
+  yield reactRender;
+
+  let quit = false;
+  while (!quit) {
+    try {
+      yield rootTask.toPromise();
+    } catch (err) {
+      console.log("Error!");
+      yield put(recordError(err));
+
+      const { type } = yield take([
+        "co/fwoar/APP_RESTART",
+        "co/fwoar/APP_QUIT"
+      ]);
+      if (type === "co/fwoar/APP_QUIT") {
+        console.log("Quitting!");
+        quit = true;
+      } else if (type === "co/fwoar/APP_RESTART") {
+        console.log("restarting");
+        rootTask = yield spawn(rootSaga);
+      }
+    }
+    yield delay(10);
+  }
+}
+
+sagaMiddleware.run(toplevel);
