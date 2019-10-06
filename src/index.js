@@ -14,6 +14,7 @@ import { rootReducer, updateName } from "./reducer";
 import { rootSaga, getIp, fail } from "./root-saga";
 
 import { put } from "redux-saga/effects";
+import { FocusManager } from "./FocusManager";
 
 // Store Setup ==============================================================================
 
@@ -46,7 +47,9 @@ function* toplevel() {
     ReactDOM.render(
       // The Toplevel component is wrapped in a provider, to make the store available to connect
       <Provider store={store}>
-        <ConnectedRoot />
+        <FocusManager>
+          {(ref, doFocus) => <ConnectedRoot focusRef={ref} {...{ doFocus }} />}
+        </FocusManager>
       </Provider>,
       document.getElementById("root"),
       resolve

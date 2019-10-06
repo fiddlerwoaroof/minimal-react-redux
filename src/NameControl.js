@@ -1,6 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+const InputWithFocus = React.forwardRef((props, ref) => (
+  <input {...props} ref={ref} />
+));
+
 export class NameControl extends React.Component {
   constructor(props) {
     super(props);
@@ -13,7 +17,8 @@ export class NameControl extends React.Component {
     if (this.props.name === "") {
       return (
         <div>
-          <input
+          <InputWithFocus
+            ref={this.props.focusRef}
             type="text"
             value={this.state.cur_input}
             onChange={e => this.setState({ cur_input: e.target.value })}

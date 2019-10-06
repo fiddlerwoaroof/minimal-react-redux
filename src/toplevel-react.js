@@ -3,7 +3,17 @@ import PropTypes from "prop-types";
 import { NameControl } from "./NameControl";
 import { IpControl } from "./IpControl";
 
-export const Root = ({ name, updateName, ip, getIp, fail, error, restart }) => (
+export const Root = ({
+  name,
+  updateName,
+  ip,
+  getIp,
+  fail,
+  error,
+  restart,
+  doFocus,
+  focusRef
+}) => (
   <div>
     {error ? (
       <div>
@@ -11,10 +21,11 @@ export const Root = ({ name, updateName, ip, getIp, fail, error, restart }) => (
         error resolved. <button onClick={restart}>Restart</button>
       </div>
     ) : null}
-    <NameControl name={name} updateName={updateName} />
+    <NameControl name={name} updateName={updateName} focusRef={focusRef} />
     <IpControl ip={ip} getIp={getIp} />
     <p />
     <button onClick={fail}>Fail</button>
+    <button onClick={doFocus}>Focus!</button>
   </div>
 );
 Root.propTypes = {
